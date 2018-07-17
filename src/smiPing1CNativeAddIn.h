@@ -16,15 +16,26 @@ class CTemplNative : public IComponentBase
 public:
     enum Props
     {
-		eTempProp = 0, //добавленое собственное свойство, изменяется при написании реального компонента
-		eTempPropReadable, //добавленое собственное свойство, изменяется при написании реального компонента
+		//поля для инициализации
+		eAddress = 0, //ip адрес или имя компьютера для пинга. По-умолчанию localhost
+		ePingCount, //количество пингов по-умолчанию 1
+		ePackageSizeB, //размер тестового пакета в Байтах по-умолчанию 8B
+		//индикатор завершения пингования
+		ePingIsComplit, //по-умолчанию false
+		//поля полученного результатта
+		eGoodPingPercent, //процент успешных пингов
+		eMinTTL, //минимальное время прохождения пинга
+		eMaxTTL, //минимальное время прохождения пинга
         eLastProp      // Always last
     };
 
     enum Methods
     {
-		eTempMethod = 0, //добавленый собственный метод, изменяется при написании реального компонента для вызова как процедура
-		eTempMethodFunc, //добавленый собственный метод, изменяется при написании реального компонента для вызова как функция
+		ePing = 0, //посылаем пинг по заданным параметрам 
+		/*
+		при запуске устанавливает ePingIsComplit в false
+		при завершении в true
+		*/
         eLastMethod      // Always last
     };
 
@@ -62,19 +73,29 @@ public:
     virtual void ADDIN_API SetLocale(const WCHAR_T* loc);
 private:
 	long findName(const wchar_t* names[], const wchar_t* name, const uint32_t size) const;
+	void DropResultData();
 
     // Attributes
 	//взято из примера its
 	IAddInDefBase * m_iConnect;
-	IMemoryManager     *m_iMemory;
+	IMemoryManager *m_iMemory;
 
-	bool m_boolTempProp; //приватное свойство соответствующее eTempProp
-	bool m_boolTempPropReadable; //приватное свойство соответствующее eTempPropReadable
+	//поля для инициализации
+	char* m_strAddress; //ip адрес или имя компьютера для пинга. По-умолчанию localhost
+	int m_intPingCount; //количество пингов по-умолчанию 1
+	int	m_intPackageSizeB; //размер тестового пакета в Байтах по-умолчанию 8B
+	bool m_boolPingIsComplit; //индикатор завершения пингования по-умолчанию false
+	//поля полученного результатта
+	int m_intGoodPingPercent; //процент успешных пингов
+	int m_intMinTTL; //минимальное время прохождения пинга
+	int m_intMaxTTL; //минимальное время прохождения пинга
 		 
 	//---------------------------------------------------------------------------//
 	//прикладные методы компоненты
-	bool fTempMethod(tVariant* paParams, const long lSizeArray);
-	bool fTempMethodFunc(tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray);
-
+	bool SendPing(); // посылаем пинг по заданным параметрам 
+					 // при запуске устанавливает ePingIsComplit в false
+					 // при завершении в true
+					 
+	
 };
 #endif //__SMIPING1CNATIVEADDIN_H__

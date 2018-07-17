@@ -23,37 +23,37 @@ lib в строку 'Каталоги библиотек'
 //собственный заголовочный файл, в котором будем описывать свои классы
 #include "smiPing1CNativeAddIn.h"
 
-/*объявляем коллекции свойств и методов для en и ru, взято из примена its
-но упрощено до двух полей: Field1,2 соответствуют Поле1,2
-и двух методов Method1,2 соответствуют Метод1,2
-*/
-
 static const wchar_t *g_PropNames[] = {
-	L"ForWrite", /*свойство соответствует eTempProp*/
-	L"ForRead"
+	//поля для инициализации
+	L"Address", //ip адрес или имя компьютера для пинга. По-умолчанию localhost
+	L"PingCount", //количество пингов по-умолчанию 1
+	L"PackageSizeB", //размер тестового пакета в Байтах по-умолчанию 8B
+	L"PingIsComplit", //индикатор завершения пингования по-умолчанию false
+	//поля полученного результатта
+	L"GoodPingPercent", //процент успешных пингов
+	L"MinTTL" //минимальное время прохождения пинга
+	L"MaxTTL",//минимальное время прохождения пинга
 };
 static const wchar_t *g_MethodNames[] = {
-	L"WriteField", //метод соответствует eTempMethod
-	L"ReadField"   //метод соответствует eTempMethodFunc
+	L"SendPing"
 };
 
 static const wchar_t *g_PropNamesRu[] = {
-	L"ДляЗаписи",  /*свойство соответствует eTempProp*/
-	L"ДляЧтения"   /*свойство соответствует eTempPropReadable*/
+	//поля для инициализации
+	L"Адрес", //ip адрес или имя компьютера для пинга. По-умолчанию localhost
+	L"КоличествоПингов", //количество пингов по-умолчанию 1
+	L"РазмерПакета", //размер тестового пакета в Байтах по-умолчанию 8B
+	L"Завершено", //индикатор завершения пингования по-умолчанию false
+	//поля полученного результатта
+	L"ПроцентУспешныхПингов", //процент успешных пингов
+	L"МинВремяПрохождения" //минимальное время прохождения пинга
+	L"МаксВремяПрохождения",//минимальное время прохождения пинга
 };
 static const wchar_t *g_MethodNamesRu[] = {
-	L"ЗаписьПоля", //метод соответствует eTempMethod
-	L"ЧтениеПоля"  //метод соответствует eTempMethodFunc
+	L"Пинг"
 };
 
-//меняем имя класса из примера CAddInNative на свое CTemplNative
-//для разработки нового класса надо будед заменить CTemplNative на более подходящее имя
-//в файлах templNative.cpp, h, def. Файлы и проект переименовываем соответственно
-//
-//Не забыть переименовать имя класса во всех объявлениях методов, 
-//а так же конструктора и деструктора
-//
-static const wchar_t g_kClassNames[] = L"CTemplNative"; //|OtherClass1|OtherClass2";
+static const wchar_t g_kClassNames[] = L"CTemplNative";
 
 uint32_t convToShortWchar(WCHAR_T** Dest, const wchar_t* Source, uint32_t len = 0);
 uint32_t convFromShortWchar(wchar_t** Dest, const WCHAR_T* Source, uint32_t len = 0);
@@ -67,13 +67,6 @@ static WcharWrapper s_names(g_kClassNames);
 /*Документация its. Получение списка имен объектов компоненты.*/
 const WCHAR_T* GetClassNames()
 {
-	/* так было в шаблоне
-	static WCHAR_T* names = 0;
-	if (!names)
-		::convToShortWchar(&names, g_kClassNames);
-	return names;
-	*/
-	//Взято из применра its
 	return s_names;
 }
 //---------------------------------------------------------------------------//
@@ -122,15 +115,25 @@ CTemplNative::CTemplNative()
 {
 	m_iMemory = 0;
 	m_iConnect = 0;
-
-	m_boolTempProp = false; //приватное свойство соответствующее eTempProp
-						//для демонстрационных целей только для зписи и чтения через метод
-	m_boolTempPropReadable = false; //приватное свойство соответствующее eTempProp
-							//для демонстрационных целей только для чтения и записи через метод
+	
+	//поля для инициализации
+	m_strAddress = "localhost"; //ip адрес или имя компьютера для пинга. По-умолчанию localhost
+	m_intPingCount = 1; //количество пингов по-умолчанию 1
+	m_intPackageSizeB =8; //размер тестового пакета в Байтах по-умолчанию 8B
+	DropResultData();
 }
 //---------------------------------------------------------------------------//
 CTemplNative::~CTemplNative()
 {
+}
+//---------------------------------------------------------------------------//
+void CTemplNative::DropResultData()
+{
+	m_boolPingIsComplit = false; //индикатор завершения пингования по-умолчанию false
+								 //поля полученного результатта
+	m_intGoodPingPercent = 0; //процент успешных пингов
+	m_intMinTTL = 0; //минимальное время прохождения пинга
+	m_intMaxTTL = 0; //минимальное время прохождения пинга
 }
 //---------------------------------------------------------------------------//
 bool CTemplNative::Init(void* pConnection)
@@ -146,18 +149,13 @@ long CTemplNative::GetInfo()
 //---------------------------------------------------------------------------//
 void CTemplNative::Done()
 {
-	//для демонстрации деактивации объекта
-	if (m_boolTempProp)
-	{
-		m_boolTempProp = !m_boolTempProp;
-	}
 }
 //---------------------------------------------------------------------------//
 bool CTemplNative::RegisterExtensionAs(WCHAR_T** wsExtensionName)
 { 
-	const wchar_t *wsExtension = L"TemplNativeExtension"; //имя компоненты
+	const wchar_t *wsExtension = L"smiPingNativeExtension"; //имя компоненты
 	//которую мы будем вызывать из 1С
-	//например НашОбъект = Новый("AddIn.MyComponent.TemplNativeExtension"); 
+	//например НашОбъект = Новый("AddIn.MyComponent.smiPingNativeExtension"); 
 	//MyComponent - имя компоненты, которое задается при подключении:
 	//ПодключитьВнешнююКомпоненту(Файл, "MyComponent", ТипВнешнейКомпоненты.Native);
 	//
@@ -238,16 +236,37 @@ bool CTemplNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 	//возвращает значение свойства
 	switch (lPropNum)
 	{
-	case eTempPropReadable://отдаем логическое значение свойства
-		TV_VT(pvarPropVal) = VTYPE_BOOL;
-		TV_BOOL(pvarPropVal) = m_boolTempPropReadable;
+	case eAddress:
+		TV_VT(pvarPropVal) = VTYPE_PSTR;
+		TV_STR(pvarPropVal) = m_strAddress;
 		break;
-	case eTempProp: //можно не указывать, т.к. по-умолчанию поле не читается
-		return false;
+	case ePingCount: 
+		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_INT(pvarPropVal) = m_intPingCount;
+		break;
+	case ePackageSizeB:
+		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_INT(pvarPropVal) = m_intPackageSizeB;
+		break;
+	case ePingIsComplit:
+		TV_VT(pvarPropVal) = VTYPE_BOOL;
+		TV_BOOL(pvarPropVal) = m_boolPingIsComplit;
+		break;
+	case eGoodPingPercent:
+		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_INT(pvarPropVal) = m_intGoodPingPercent;
+		break;
+	case eMinTTL:
+		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_INT(pvarPropVal) = m_intMinTTL;
+		break;
+	case eMaxTTL:
+		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_INT(pvarPropVal) = m_intMaxTTL;
+		break;
 	default:
 		return false;
 	}
-
 	//значение прочитано
 	return true;
 }
@@ -257,14 +276,21 @@ bool CTemplNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 	/*Взято из примера its*/
 	switch (lPropNum)
 	{
-	case eTempProp: //устанавливаем логическое значение в свойство
-		if (TV_VT(varPropVal) != VTYPE_BOOL)
+	case eAddress: //устанавливаем логическое значение в свойство
+		if (TV_VT(varPropVal) != VTYPE_PSTR)
 			return false;
-		m_boolTempProp = TV_BOOL(varPropVal);
+		m_strAddress = TV_STR(varPropVal);
 		break;
-	case eTempPropReadable:
-		return false; //приведено для примера обработки свойства не доступного для записи
-		//поведение системы по-умолчанию
+	case ePingCount:
+		if (TV_VT(varPropVal) != VTYPE_INT)
+			return false;
+		m_intPingCount = TV_INT(varPropVal);
+		break;
+	case ePackageSizeB:
+		if (TV_VT(varPropVal) != VTYPE_INT)
+			return false;
+		m_intPackageSizeB = TV_INT(varPropVal);
+		break;
 	default:
 		return false;
 	}
@@ -275,21 +301,23 @@ bool CTemplNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 //---------------------------------------------------------------------------//
 bool CTemplNative::IsPropReadable(const long lPropNum)
 { 
-	/*Взято из примера its*/
+	//Взято из примера its
+	/*
 	switch (lPropNum)
 	{
-	/*пример указания не читабельного поля*/
+	//пример указания не читабельного поля
 	case eTempProp:
 		return false;
-	/*сообщаем что свойство соответствующее eTempPropReadable можно читать*/
+	//сообщаем что свойство соответствующее eTempPropReadable можно читать
 	case eTempPropReadable:
 		return true;
 	default:
-	/*по-дефолту читать нельзя*/
+	//по-дефолту читать нельзя
 		return false;
 	}
-
-	return false;
+	*/
+	//все свойства читаемые
+	return true;
 }
 //---------------------------------------------------------------------------//
 bool CTemplNative::IsPropWritable(const long lPropNum)
@@ -297,12 +325,11 @@ bool CTemplNative::IsPropWritable(const long lPropNum)
 	/*Взято из примера its*/
 	switch (lPropNum)
 	{
-	/*сообщаем что свойство соответствующее eTempProp можно записывать*/
-	case eTempProp:
+	/*сообщаем что эти свойства можно записывать*/
+	case eAddress:
+	case ePingCount:
+	case ePackageSizeB:
 		return true;
-	/*пример указания поля не доступного для записи*/
-	case eTempPropReadable:
-		return false;
 	default:
 		return false;
 	}
@@ -388,43 +415,25 @@ long CTemplNative::GetNParams(const long lMethodNum)
 { 
 	/*Взято из примера its
 	возвращает количество параметров для заданного метода*/
+	/*
 	switch (lMethodNum)
 	{
 	case eTempMethod:
-		return 1; /*у демо метода один параметр*/
+		return 1; //у демо метода один параметр
 	
-	case eTempMethodFunc: /*у функции нет параметров*/
+	case eTempMethodFunc: //у функции нет параметров
 		return 0;
 	default:
 		return 0;
 	}
-
+	*/
+	//у методов класса нет параметров
     return 0;
 }
 //---------------------------------------------------------------------------//
 bool CTemplNative::GetParamDefValue(const long lMethodNum, const long lParamNum,
                           tVariant *pvarParamDefValue)
 { 
-	/*Взято из примера its
-	Возвращает значения по-умолчанию для параметров методов
-	*/
-	TV_VT(pvarParamDefValue) = VTYPE_EMPTY;
-
-	switch (lMethodNum)
-	{
-	case eTempMethod:
-	case eTempMethodFunc:
-	/*case eMethShowInStatusLine:
-	case eMethStartTimer:
-	case eMethStopTimer:
-	case eMethShowMsgBox:
-	*/
-		// There are no parameter values by default 
-		break;
-	default:
-		return false;
-	}
-
 	return false;
 } 
 //---------------------------------------------------------------------------//
@@ -435,11 +444,11 @@ bool CTemplNative::HasRetVal(const long lMethodNum)
 	switch (lMethodNum)
 	{
 	/*У метода нет возвращаемого значения*/
-	case eTempMethod:
+	case ePing:
 		return false;
 	/*У метода есть возвращаемое значение*/
-	case eTempMethodFunc:
-		return true;
+	//case eTempMethodFunc:
+	//	return true;
 	default:
 		return false;
 	}
@@ -454,71 +463,8 @@ bool CTemplNative::CallAsProc(const long lMethodNum,
 	/*вызов метода как процедуры*/
 	switch (lMethodNum)
 	{
-	case eTempMethod: //вызов тестового метода как процедуры
-		return fTempMethod(paParams, lSizeArray);
-	//методы из примера its
-	/*
-	case eMethDisable:
-		m_boolEnabled = false;
-		break;
-	case eMethShowInStatusLine:
-		if (m_iConnect && lSizeArray)
-		{
-			tVariant *var = paParams;
-			m_iConnect->SetStatusLine(var->pwstrVal);
-		}
-		break;
-	case eMethStartTimer:
-		pAsyncEvent = m_iConnect;
-		m_hTimerQueue = CreateTimerQueue();
-		CreateTimerQueueTimer(&m_hTimer, m_hTimerQueue,
-			(WAITORTIMERCALLBACK)MyTimerProc, 0, 1000, 1000, 0);
-		break;
-	case eMethStopTimer:
-		if (m_hTimer != 0)
-		{
-			DeleteTimerQueue(m_hTimerQueue);
-			m_hTimerQueue = 0;
-			m_hTimer = 0;
-		}
-
-		m_uiTimer = 0;
-		pAsyncEvent = NULL;
-		break;
-	case eMethShowMsgBox:
-	{
-		if (eAppCapabilities1 <= g_capabilities)
-		{
-			IAddInDefBaseEx* cnn = (IAddInDefBaseEx*)m_iConnect;
-			IMsgBox* imsgbox = (IMsgBox*)cnn->GetInterface(eIMsgBox);
-			if (imsgbox)
-			{
-				IPlatformInfo* info = (IPlatformInfo*)cnn->GetInterface(eIPlatformInfo);
-				assert(info);
-				const IPlatformInfo::AppInfo* plt = info->GetPlatformInfo();
-				if (!plt)
-					break;
-				tVariant retVal;
-				tVarInit(&retVal);
-				if (imsgbox->Confirm(plt->AppVersion, &retVal))
-				{
-					bool succeed = TV_BOOL(&retVal);
-					WCHAR_T* result = 0;
-
-					if (succeed)
-						::convToShortWchar(&result, L"OK");
-					else
-						::convToShortWchar(&result, L"Cancel");
-
-					imsgbox->Alert(result);
-					delete[] result;
-
-				}
-			}
-		}
-	}
-	break;
-	*/
+	case ePing: //вызов тестового метода как процедуры
+		return SendPing();
 	default:
 		return false;
 	}
@@ -530,17 +476,6 @@ bool CTemplNative::CallAsFunc(const long lMethodNum,
                 tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray)
 { 
 	bool ret = false;//признак успешного вызова метода
-
-	switch (lMethodNum)
-	{
-		case eTempMethodFunc:
-		{
-			//пример работы с возвращаемым значением
-			return fTempMethodFunc(pvarRetValue, paParams, lSizeArray);
-		}
-		break;
-
-	}
     return ret; 
 }
 //---------------------------------------------------------------------------//
@@ -617,30 +552,9 @@ uint32_t getLenShortWcharStr(const WCHAR_T* Source)
 
 //---------------------------------------------------------------------------//
 //прикладные методы компоненты
-bool CTemplNative::fTempMethod(tVariant* paParams, const long lSizeArray) //обработка eTempMethod1
+bool CTemplNative::SendPing() //обработка ePing
 {
-	//устанавливаем не доступное для записи свойство eTempProp1.
-	//вызывается в 1С как процедура, для 1С не имеет возвращаемого параметра
-	//в компоненте возвращает признак успешного вызова метода
-	//пример работы с параметрами
-	if (lSizeArray != 1 || !paParams) //если кол-во параметров не 1 или параметр не установлен
-		return false;
+	DropResultData(); //обнуляем предыдущие результаты
 
-	if (TV_VT(paParams) != VTYPE_BOOL) //если тип параметра не булево
-		return false;
-
-	m_boolTempPropReadable = TV_BOOL(paParams);  //устанавливаем свойство соотв. eTempPropReadable по значению параметра
-	return true;
-}
-
-bool CTemplNative::fTempMethodFunc(tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray) //обработка eTempMethod2
-{
-	//читаем не доступное для чтения свойство eTempProp2.
-	/*вызывается из 1С, как функция, в компоненту возвращает признак успешного выполнения модуля*/
-
-	//у данной функции нет параметров просто возвращаем значение. Пример работы с параметрами в fTempMethod
-	//устанавливаем логическое значение и тип булево
-	pvarRetValue->bVal = m_boolTempProp;
-	TV_VT(pvarRetValue) = VTYPE_BOOL;
 	return true;
 }

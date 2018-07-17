@@ -1,5 +1,7 @@
 ﻿  stdafx.cpp
   WcharWrapper.cpp
   smiPing1CNativeAddIn.cpp
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(24): fatal error C1083: Не удается открыть файл включение: templNative.h: No such file or directory,
   Создание кода...
+  dllmain.cpp
+smiPing1CNativeAddIn.obj : warning LNK4075: не учитывается "/EDITANDCONTINUE" из-за спецификации "/SAFESEH"
+LINK : fatal error LNK1104: не удается открыть файл "templNative.def"

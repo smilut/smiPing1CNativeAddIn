@@ -90,20 +90,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Users\s.milytinskiy\Documents\Visual Studio 2017\Projects\template\templNativeAPI\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\s.milytinskiy\Documents\Visual Studio 2017\Projects\template\templNativeAPI\lib;$(LibraryPath)</LibraryPath>
-    <TargetExt>.32.dll</TargetExt>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\lib;$(LibraryPath)</LibraryPath>
-    <TargetExt>.64.dll</TargetExt>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetExt>.32.dll</TargetExt>
+    <TargetExt>.dll</TargetExt>
     <IncludePath>C:\Users\s.milytinskiy\Documents\Visual Studio 2017\Projects\template\templNativeAPI\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\s.milytinskiy\Documents\Visual Studio 2017\Projects\template\templNativeAPI\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetExt>.64.dll</TargetExt>
+    <TargetExt>.dll</TargetExt>
     <IncludePath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
