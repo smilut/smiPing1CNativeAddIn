@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+/lib
+/src/.vs/templNative/v15/Browse.VC.opendb

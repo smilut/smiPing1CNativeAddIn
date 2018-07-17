@@ -1,0 +1,5 @@
+﻿  stdafx.cpp
+  WcharWrapper.cpp
+  smiPing1CNativeAddIn.cpp
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(24): fatal error C1083: Не удается открыть файл включение: templNative.h: No such file or directory,
+  Создание кода...

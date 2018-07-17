@@ -1,0 +1,7 @@
+LIBRARY    "smiPing1CNativeAddIn.dll"
+
+EXPORTS
+GetClassObject
+DestroyObject
+GetClassNames
+
