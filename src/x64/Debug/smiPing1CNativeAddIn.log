@@ -1,17 +1,17 @@
 ﻿  stdafx.cpp
   smiPing1CNativeAddIn.cpp
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(91): warning C4311: приведение типов: усечение указателя из "IComponentBase *" в "long"
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(91): warning C4302: приведение типов: усечение из "IComponentBase *" к "long"
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(176): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(236): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(252): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(272): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(305): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(424): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(516): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(653): warning C4018: >: несоответствие типов со знаком и без знака
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(654): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(588): warning C4101: wstrResult: неиспользованная локальная переменная
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(92): warning C4311: приведение типов: усечение указателя из "IComponentBase *" в "long"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(92): warning C4302: приведение типов: усечение из "IComponentBase *" к "long"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(177): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(237): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(253): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(273): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(306): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(425): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(517): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(654): warning C4018: >: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(655): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(589): warning C4101: wstrResult: неиспользованная локальная переменная
   WcharWrapper.cpp
 c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\wcharwrapper.cpp(16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   Создание кода...
