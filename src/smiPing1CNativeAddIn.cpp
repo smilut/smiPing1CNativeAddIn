@@ -13,10 +13,6 @@ lib в строку 'Каталоги библиотек'
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-
 #include <WinSock2.h>
 #include <ws2tcpip.h>
 #include <Windows.h>
@@ -24,6 +20,7 @@ lib в строку 'Каталоги библиотек'
 #include <stdio.h>
 #include <wchar.h>
 #include <string>
+#include <comdef.h>
 //создан по образцу из its.
 //класс для преобразования строки к юникоду
 //урезан для функционирования только для win 
@@ -42,8 +39,8 @@ static const wchar_t *g_PropNames[] = {
 	L"PingIsComplete", //индикатор завершения пингования по-умолчанию false
 	//поля полученного результатта
 	L"GoodPingPercent", //процент успешных пингов
-	L"MinTTL" //минимальное время прохождения пинга
-	L"MaxTTL",//минимальное время прохождения пинга
+	L"MinElapsedTime" //минимальное время прохождения пинга
+	L"MaxElapsedTime",//минимальное время прохождения пинга
 	L"IsError", //признак возникновения ошибки при пинге
 	L"ErrMessage" //сообщение об ошибках в процессе пингования
 };
@@ -149,8 +146,8 @@ void CTemplNative::DropResultData()
 	m_boolIsError = false;	//признак возникновения ошибки при пинге
 	m_strErrMessage = L"";	//сообщение об ошибках в процессе пингования
 	m_intGoodPingPercent = 0; //процент успешных пингов
-	m_intMinTTL = 0; //минимальное время прохождения пинга
-	m_intMaxTTL = 0; //минимальное время прохождения пинга
+	m_intMinElapsedTime = 0; //минимальное время прохождения пинга
+	m_intMaxElapsedTime = 0; //минимальное время прохождения пинга
 }
 //---------------------------------------------------------------------------//
 bool CTemplNative::Init(void* pConnection)
@@ -292,11 +289,11 @@ bool CTemplNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 		break;
 	case eMinTTL:
 		TV_VT(pvarPropVal) = VTYPE_I4;
-		TV_INT(pvarPropVal) = m_intMinTTL;
+		TV_INT(pvarPropVal) = m_intMinElapsedTime;
 		break;
 	case eMaxTTL:
 		TV_VT(pvarPropVal) = VTYPE_I4;
-		TV_INT(pvarPropVal) = m_intMaxTTL;
+		TV_INT(pvarPropVal) = m_intMaxElapsedTime;
 		break;
 	case eIsError:
 		TV_VT(pvarPropVal) = VTYPE_BOOL;
@@ -326,10 +323,10 @@ bool CTemplNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 		if (TV_VT(varPropVal) != VTYPE_I4) return false;
 		m_intPingCount = TV_INT(varPropVal);
 		break;
-	case ePackageSizeB:
-		if (TV_VT(varPropVal) != VTYPE_I4) return false;
-		m_intPackageSizeB = TV_INT(varPropVal);
-		break;
+	//case ePackageSizeB:
+	//	if (TV_VT(varPropVal) != VTYPE_I4) return false;
+	//	m_intPackageSizeB = TV_INT(varPropVal);
+	//	break;
 	default:
 		return false;
 	}
@@ -352,7 +349,7 @@ bool CTemplNative::IsPropWritable(const long lPropNum)
 	/*сообщаем что эти свойства можно записывать*/
 	case eAddress:
 	case ePingCount:
-	case ePackageSizeB:
+	//case ePackageSizeB:
 		return true;
 	default:
 		return false;
@@ -578,9 +575,7 @@ bool CTemplNative::Ping() //обработка ePing
 {		
 	DropResultData(); //обнуляем предыдущие результаты
 	UINT nRetries = m_intPingCount;
-	LPCSTR pstrHost;
-	//pstrHost = m_strAddress;
-		 
+	_bstr_t pstrHost(m_strAddress);
 	SOCKET	  rawSocket;
 	LPHOSTENT lpHost;
 	UINT	  nLoop;
@@ -592,13 +587,15 @@ bool CTemplNative::Ping() //обработка ePing
 	u_char    cTTL;
 	wchar_t* wstrResult;
 
+
 	int iResult;
 	WSADATA wsaData;
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
 
-		//wstrResult = "WSAStart error " + iResult;
-		return false;// wstrResult;
+		m_boolIsError = true;
+		m_strErrMessage = L"Ошибка инициализации WSAStartup.";
+		return false;
 	}
 
 	// Create a Raw socket
@@ -606,7 +603,8 @@ bool CTemplNative::Ping() //обработка ePing
 
 	if (rawSocket == SOCKET_ERROR)
 	{
-		//ошибка работы с сокетом
+		m_boolIsError = true;
+		m_strErrMessage = L"Ошибка открытия сокета";
 		return false;
 	}
 
@@ -633,15 +631,16 @@ bool CTemplNative::Ping() //обработка ePing
 		nRet = WaitForEchoReply(rawSocket);
 		if (nRet == SOCKET_ERROR)
 		{
-			//ошибка работы с сокетом
+			m_boolIsError = true;
+			m_strErrMessage = L"Ожидание ответа. Ошибка работы с сокетом";
 			break;
 		}
 		if (!nRet)
 		{
-			//сообщение о превышени времени ожидания ответа
+			//превышено время ожидания ответа.
+			m_strErrMessage = L"Превышено время ожидания.";
 		}
 		else
-
 		{
 
 			// Receive reply
@@ -649,6 +648,12 @@ bool CTemplNative::Ping() //обработка ePing
 
 			// Calculate elapsed time
 			dwElapsed = GetTickCount() - dwTimeSent;
+
+			//устанавливаем мин и макс время ожидания ответа
+			if (m_intMinElapsedTime > dwElapsed || m_intMinElapsedTime == 0) m_intMinElapsedTime = dwElapsed;
+			if (m_intMaxElapsedTime < dwElapsed) m_intMaxElapsedTime = dwElapsed;
+			m_intGoodPingPercent++;
+			m_intPackageSizeB = REQ_DATASIZE;
 			/*
 			str.Format("Reply[%d] from: %s: bytes=%d time=%ldms TTL=%d",
 			nLoop+1, -- номер повторения
@@ -667,16 +672,19 @@ bool CTemplNative::Ping() //обработка ePing
 	nRet = closesocket(rawSocket);
 	if (nRet == SOCKET_ERROR)
 	{
-		//ошибка работы с сокетом
+		m_boolIsError = true;
+		m_strErrMessage = L"Ошибка закрытия сокета";
 	}
 	WSACleanup();
 
+	m_intGoodPingPercent = m_intGoodPingPercent / m_intPingCount*100;
+	m_boolPingIsComplete = true;
 	//пингуем
 	/*
 	//Тестовые данные для проверки интерфейсов
 	m_intGoodPingPercent = 20;
-	m_intMaxTTL = 100;
-	m_intMinTTL = 30;
+	m_intMaxElapsedTime = 100;
+	m_intMinElapsedTime = 30;
 	m_boolPingIsComplete = true;
 	m_boolIsError = true;
 	m_strErrMessage = L"Образец сообщения об ошибке";
@@ -718,7 +726,8 @@ int CTemplNative::SendEchoRequest(SOCKET s, LPSOCKADDR_IN lpstToAddr)
 
 	if (nRet == SOCKET_ERROR)
 	{
-		//ошибка работы с сокетом
+		m_boolIsError = true;
+		m_strErrMessage = L"Ошибка работы с сокетом";
 	}
 	return (nRet);
 }
@@ -740,7 +749,8 @@ DWORD CTemplNative::RecvEchoReply(SOCKET s, LPSOCKADDR_IN lpsaFrom, u_char * pTT
 							// Check return value
 	if (nRet == SOCKET_ERROR)
 	{
-		//ошибка работы с сокетом
+		m_boolIsError = true;
+		m_strErrMessage = L"Ошибка работы с сокетом";
 	}
 
 	// return time sent and IP TTL

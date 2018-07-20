@@ -8,6 +8,7 @@
 
 #define ICMP_ECHOREPLY	0
 #define ICMP_ECHOREQ	8
+#define REQ_DATASIZE  32
 
 #include "ComponentBase.h"
 #include "AddInDefBase.h"
@@ -95,8 +96,8 @@ private:
 	bool m_boolPingIsComplete; //индикатор завершения пингования по-умолчанию false
 	//поля полученного результатта
 	int m_intGoodPingPercent; //процент успешных пингов
-	int m_intMinTTL; //минимальное время прохождения пинга
-	int m_intMaxTTL; //минимальное время прохождения пинга
+	int m_intMinElapsedTime; //минимальное время прохождения пинга
+	int m_intMaxElapsedTime; //минимальное время прохождения пинга
 	
 	bool m_boolIsError; //признак возникновения ошибки при пинге
 	wchar_t* m_strErrMessage; //сообщение об ошибках в процессе пингования
@@ -140,9 +141,6 @@ typedef struct tagICMPHDR
 	u_short	Seq;			// Sequence
 	char	Data;			// Data
 }ICMPHDR, *PICMPHDR;
-
-
-#define REQ_DATASIZE 32		// Echo Request Data size
 
 // ICMP Echo Request
 typedef struct tagECHOREQUEST
