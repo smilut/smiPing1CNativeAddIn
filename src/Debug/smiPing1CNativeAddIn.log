@@ -1,0 +1,8 @@
+﻿  stdafx.cpp
+  WcharWrapper.cpp
+  smiPing1CNativeAddIn.cpp
+  Создание кода...
+  dllmain.cpp
+smiPing1CNativeAddIn.obj : warning LNK4075: не учитывается "/EDITANDCONTINUE" из-за спецификации "/SAFESEH"
+     Создается библиотека C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\Debug\smiPing1CNativeAddIn.lib и объект C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\Debug\smiPing1CNativeAddIn.exp
+  smiPing1CNativeAddIn.vcxproj -> C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\Debug\smiPing1CNativeAddIn.dll

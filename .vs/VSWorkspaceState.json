@@ -1,9 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
     "\\src"
   ],
-  "SelectedNode": "\\src\\smiPing1CNativeAddIn.vcxproj.user",
+  "SelectedNode": "\\src\\smiPing1CNativeAddIn.cpp",
   "PreviewInSolutionExplorer": false
 }

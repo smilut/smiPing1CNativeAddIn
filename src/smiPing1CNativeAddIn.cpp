@@ -11,28 +11,41 @@ lib в строку 'Каталоги библиотек'
 
 #include "stdafx.h"
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+
+#include <WinSock2.h>
+#include <ws2tcpip.h>
+#include <Windows.h>
+
 #include <stdio.h>
 #include <wchar.h>
 #include <string>
-
 //создан по образцу из its.
 //класс для преобразования строки к юникоду
 //урезан для функционирования только для win 
 #include "WcharWrapper.h"
-
 //собственный заголовочный файл, в котором будем описывать свои классы
 #include "smiPing1CNativeAddIn.h"
+
+// link with Ws2_32.lib
+#pragma comment (lib, "Ws2_32.lib")
 
 static const wchar_t *g_PropNames[] = {
 	//поля для инициализации
 	L"Address", //ip адрес или имя компьютера для пинга. По-умолчанию localhost
 	L"PingCount", //количество пингов по-умолчанию 1
 	L"PackageSizeB", //размер тестового пакета в Байтах по-умолчанию 8B
-	L"PingIsComplit", //индикатор завершения пингования по-умолчанию false
+	L"PingIsComplete", //индикатор завершения пингования по-умолчанию false
 	//поля полученного результатта
 	L"GoodPingPercent", //процент успешных пингов
 	L"MinTTL" //минимальное время прохождения пинга
 	L"MaxTTL",//минимальное время прохождения пинга
+	L"IsError", //признак возникновения ошибки при пинге
+	L"ErrMessage" //сообщение об ошибках в процессе пингования
 };
 static const wchar_t *g_MethodNames[] = {
 	L"SendPing"
@@ -46,8 +59,10 @@ static const wchar_t *g_PropNamesRu[] = {
 	L"Завершено", //индикатор завершения пингования по-умолчанию false
 	//поля полученного результатта
 	L"ПроцентУспешныхПингов", //процент успешных пингов
-	L"МинВремяПрохождения" //минимальное время прохождения пинга
+	L"МинВремяПрохождения", //минимальное время прохождения пинга
 	L"МаксВремяПрохождения",//минимальное время прохождения пинга
+	L"ЕстьОшибка", //признак возникновения ошибки при пинге
+	L"ОписаниеОшибки" //сообщение об ошибках в процессе пингования
 };
 static const wchar_t *g_MethodNamesRu[] = {
 	L"Пинг"
@@ -114,12 +129,12 @@ AppCapabilities SetPlatformCapabilities(const AppCapabilities capabilities)
 CTemplNative::CTemplNative()
 {
 	m_iMemory = 0;
-	m_iConnect = 0;
-	
+	m_iConnect = 0;	
+
 	//поля для инициализации
-	m_strAddress = "localhost"; //ip адрес или имя компьютера для пинга. По-умолчанию localhost
+	m_strAddress = L"localhost"; //ip адрес или имя компьютера для пинга. По-умолчанию localhost
 	m_intPingCount = 1; //количество пингов по-умолчанию 1
-	m_intPackageSizeB =8; //размер тестового пакета в Байтах по-умолчанию 8B
+	m_intPackageSizeB = 8; //размер тестового пакета в Байтах по-умолчанию 8B
 	DropResultData();
 }
 //---------------------------------------------------------------------------//
@@ -129,8 +144,10 @@ CTemplNative::~CTemplNative()
 //---------------------------------------------------------------------------//
 void CTemplNative::DropResultData()
 {
-	m_boolPingIsComplit = false; //индикатор завершения пингования по-умолчанию false
+	m_boolPingIsComplete = false; //индикатор завершения пингования по-умолчанию false
 								 //поля полученного результатта
+	m_boolIsError = false;	//признак возникновения ошибки при пинге
+	m_strErrMessage = L"";	//сообщение об ошибках в процессе пингования
 	m_intGoodPingPercent = 0; //процент успешных пингов
 	m_intMinTTL = 0; //минимальное время прохождения пинга
 	m_intMaxTTL = 0; //минимальное время прохождения пинга
@@ -230,39 +247,65 @@ const WCHAR_T* CTemplNative::GetPropName(long lPropNum, long lPropAlias)
 	return wsPropName;
 }
 //---------------------------------------------------------------------------//
+wchar_t* CTemplNative::SetWCharPropertyVal(const WCHAR_T* src)
+{
+	wchar_t *wsAddress = NULL;
+	int iActualSize = 0;
+
+	iActualSize = wcslen(src) + 1;
+
+	if (m_iMemory && src)
+	{
+		if (m_iMemory->AllocMemory((void**)&wsAddress, iActualSize * sizeof(WCHAR_T)))
+			::convToShortWchar(&wsAddress, src, iActualSize);
+	}
+
+	return wsAddress;
+
+}
+
+//---------------------------------------------------------------------------//
 bool CTemplNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 { 
-	/*Взято из примера its*/
-	//возвращает значение свойства
 	switch (lPropNum)
 	{
-	case eAddress:
-		TV_VT(pvarPropVal) = VTYPE_PSTR;
-		TV_STR(pvarPropVal) = m_strAddress;
+	case eAddress:	
+		TV_VT(pvarPropVal) = VTYPE_PWSTR;
+		pvarPropVal->pwstrVal = SetWCharPropertyVal(m_strAddress);
+		pvarPropVal->strLen = wcslen(m_strAddress);
 		break;
 	case ePingCount: 
-		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_VT(pvarPropVal) = VTYPE_I4;
 		TV_INT(pvarPropVal) = m_intPingCount;
 		break;
 	case ePackageSizeB:
-		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_VT(pvarPropVal) = VTYPE_I4;
 		TV_INT(pvarPropVal) = m_intPackageSizeB;
 		break;
-	case ePingIsComplit:
+	case ePingIsComplete:
 		TV_VT(pvarPropVal) = VTYPE_BOOL;
-		TV_BOOL(pvarPropVal) = m_boolPingIsComplit;
+		TV_BOOL(pvarPropVal) = m_boolPingIsComplete;
 		break;
 	case eGoodPingPercent:
-		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_VT(pvarPropVal) = VTYPE_I4;
 		TV_INT(pvarPropVal) = m_intGoodPingPercent;
 		break;
 	case eMinTTL:
-		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_VT(pvarPropVal) = VTYPE_I4;
 		TV_INT(pvarPropVal) = m_intMinTTL;
 		break;
 	case eMaxTTL:
-		TV_VT(pvarPropVal) = VTYPE_INT;
+		TV_VT(pvarPropVal) = VTYPE_I4;
 		TV_INT(pvarPropVal) = m_intMaxTTL;
+		break;
+	case eIsError:
+		TV_VT(pvarPropVal) = VTYPE_BOOL;
+		TV_INT(pvarPropVal) = m_boolIsError;
+		break;
+	case eErrMessage:
+		TV_VT(pvarPropVal) = VTYPE_PWSTR;
+		pvarPropVal->pwstrVal = SetWCharPropertyVal(m_strErrMessage);
+		pvarPropVal->strLen = wcslen(m_strErrMessage);
 		break;
 	default:
 		return false;
@@ -272,23 +315,19 @@ bool CTemplNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 }
 //---------------------------------------------------------------------------//
 bool CTemplNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
-{ 
-	/*Взято из примера its*/
+{ 	
 	switch (lPropNum)
 	{
-	case eAddress: //устанавливаем логическое значение в свойство
-		if (TV_VT(varPropVal) != VTYPE_PSTR)
-			return false;
-		m_strAddress = TV_STR(varPropVal);
+	case eAddress: 
+		if (TV_VT(varPropVal) != VTYPE_PWSTR) return false;
+		m_strAddress = SetWCharPropertyVal(varPropVal->pwstrVal);
 		break;
 	case ePingCount:
-		if (TV_VT(varPropVal) != VTYPE_INT)
-			return false;
+		if (TV_VT(varPropVal) != VTYPE_I4) return false;
 		m_intPingCount = TV_INT(varPropVal);
 		break;
 	case ePackageSizeB:
-		if (TV_VT(varPropVal) != VTYPE_INT)
-			return false;
+		if (TV_VT(varPropVal) != VTYPE_I4) return false;
 		m_intPackageSizeB = TV_INT(varPropVal);
 		break;
 	default:
@@ -301,21 +340,6 @@ bool CTemplNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 //---------------------------------------------------------------------------//
 bool CTemplNative::IsPropReadable(const long lPropNum)
 { 
-	//Взято из примера its
-	/*
-	switch (lPropNum)
-	{
-	//пример указания не читабельного поля
-	case eTempProp:
-		return false;
-	//сообщаем что свойство соответствующее eTempPropReadable можно читать
-	case eTempPropReadable:
-		return true;
-	default:
-	//по-дефолту читать нельзя
-		return false;
-	}
-	*/
 	//все свойства читаемые
 	return true;
 }
@@ -459,12 +483,10 @@ bool CTemplNative::HasRetVal(const long lMethodNum)
 bool CTemplNative::CallAsProc(const long lMethodNum,
                     tVariant* paParams, const long lSizeArray)
 { 
-	/*Взято из примера its*/
-	/*вызов метода как процедуры*/
 	switch (lMethodNum)
 	{
-	case ePing: //вызов тестового метода как процедуры
-		return SendPing();
+	case ePing: 
+		return Ping();
 	default:
 		return false;
 	}
@@ -552,9 +574,225 @@ uint32_t getLenShortWcharStr(const WCHAR_T* Source)
 
 //---------------------------------------------------------------------------//
 //прикладные методы компоненты
-bool CTemplNative::SendPing() //обработка ePing
-{
+bool CTemplNative::Ping() //обработка ePing
+{		
 	DropResultData(); //обнуляем предыдущие результаты
+	UINT nRetries = m_intPingCount;
+	LPCSTR pstrHost;
+	//pstrHost = m_strAddress;
+		 
+	SOCKET	  rawSocket;
+	LPHOSTENT lpHost;
+	UINT	  nLoop;
+	int       nRet;
+	struct    sockaddr_in saDest;
+	struct    sockaddr_in saSrc;
+	DWORD	  dwTimeSent;
+	DWORD	  dwElapsed;
+	u_char    cTTL;
+	wchar_t* wstrResult;
 
+	int iResult;
+	WSADATA wsaData;
+	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (iResult != 0) {
+
+		//wstrResult = "WSAStart error " + iResult;
+		return false;// wstrResult;
+	}
+
+	// Create a Raw socket
+	rawSocket = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+
+	if (rawSocket == SOCKET_ERROR)
+	{
+		//ошибка работы с сокетом
+		return false;
+	}
+
+	// Lookup host
+	lpHost = gethostbyname(pstrHost);
+
+	if (lpHost == NULL)
+	{
+		//ошибка не найден host по адресу
+		return false;
+	}
+
+	// Setup destination socket address
+	saDest.sin_addr.s_addr = *((u_long FAR *) (lpHost->h_addr));
+	saDest.sin_family = AF_INET;
+	saDest.sin_port = 0;
+
+	// Ping multiple times
+	for (nLoop = 0; nLoop < nRetries; nLoop++)
+	{
+		// Send ICMP echo request
+		SendEchoRequest(rawSocket, &saDest);
+
+		nRet = WaitForEchoReply(rawSocket);
+		if (nRet == SOCKET_ERROR)
+		{
+			//ошибка работы с сокетом
+			break;
+		}
+		if (!nRet)
+		{
+			//сообщение о превышени времени ожидания ответа
+		}
+		else
+
+		{
+
+			// Receive reply
+			dwTimeSent = RecvEchoReply(rawSocket, &saSrc, &cTTL);
+
+			// Calculate elapsed time
+			dwElapsed = GetTickCount() - dwTimeSent;
+			/*
+			str.Format("Reply[%d] from: %s: bytes=%d time=%ldms TTL=%d",
+			nLoop+1, -- номер повторения
+			inet_ntoa(saSrc.sin_addr), -- адрес для пинга
+			REQ_DATASIZE, -- размер пакета
+			dwElapsed, -- время ожидания ответа
+			cTTL -- время TTL);
+			*/
+
+			//пауза 1 сек
+			Sleep(1000);
+		}
+	}
+
+
+	nRet = closesocket(rawSocket);
+	if (nRet == SOCKET_ERROR)
+	{
+		//ошибка работы с сокетом
+	}
+	WSACleanup();
+
+	//пингуем
+	/*
+	//Тестовые данные для проверки интерфейсов
+	m_intGoodPingPercent = 20;
+	m_intMaxTTL = 100;
+	m_intMinTTL = 30;
+	m_boolPingIsComplete = true;
+	m_boolIsError = true;
+	m_strErrMessage = L"Образец сообщения об ошибке";
+	*/
 	return true;
+}
+
+int CTemplNative::SendEchoRequest(SOCKET s, LPSOCKADDR_IN lpstToAddr)
+{
+	static ECHOREQUEST echoReq;
+	static int nId = 1;
+	static int nSeq = 1;
+	int nRet;
+
+	// Fill in echo request
+	echoReq.icmpHdr.Type = ICMP_ECHOREQ;
+	echoReq.icmpHdr.Code = 0;
+	echoReq.icmpHdr.Checksum = 0;
+	echoReq.icmpHdr.ID = nId++;
+	echoReq.icmpHdr.Seq = nSeq++;
+
+	// Fill in some data to send
+	for (nRet = 0; nRet < REQ_DATASIZE; nRet++)
+		echoReq.cData[nRet] = ' ' + nRet;
+
+	// Save tick count when sent
+	echoReq.dwTime = GetTickCount();
+
+	// Put data in packet and compute checksum
+	echoReq.icmpHdr.Checksum = in_cksum((u_short *)&echoReq, sizeof(ECHOREQUEST));
+
+	// Send the echo request  								  
+	nRet = sendto(s,						/* socket */
+		(LPSTR)&echoReq,			/* buffer */
+		sizeof(ECHOREQUEST),
+		0,							/* flags */
+		(LPSOCKADDR)lpstToAddr, /* destination */
+		sizeof(SOCKADDR_IN));   /* address length */
+
+	if (nRet == SOCKET_ERROR)
+	{
+		//ошибка работы с сокетом
+	}
+	return (nRet);
+}
+
+DWORD CTemplNative::RecvEchoReply(SOCKET s, LPSOCKADDR_IN lpsaFrom, u_char * pTTL)
+{
+	ECHOREPLY echoReply;
+	int nRet;
+	int nAddrLen = sizeof(struct sockaddr_in);
+
+	// Receive the echo reply	
+	nRet = recvfrom(s,					// socket
+		(LPSTR)&echoReply,	// buffer
+		sizeof(ECHOREPLY),	// size of buffer
+		0,					// flags
+		(LPSOCKADDR)lpsaFrom,	// From address
+		&nAddrLen);			// pointer to address len
+
+							// Check return value
+	if (nRet == SOCKET_ERROR)
+	{
+		//ошибка работы с сокетом
+	}
+
+	// return time sent and IP TTL
+	*pTTL = echoReply.ipHdr.TTL;
+
+	return(echoReply.echoRequest.dwTime);
+}
+
+int CTemplNative::WaitForEchoReply(SOCKET s)
+{
+	struct timeval Timeout;
+	fd_set readfds;
+
+	readfds.fd_count = 1;
+	readfds.fd_array[0] = s;
+	Timeout.tv_sec = 1;
+	Timeout.tv_usec = 0;
+
+	return(select(1, &readfds, NULL, NULL, &Timeout));
+}
+
+u_short CTemplNative::in_cksum(u_short * addr, int len)
+{
+	register int nleft = len;
+	register u_short *w = addr;
+	register u_short answer;
+	register int sum = 0;
+
+	/*
+	*  Our algorithm is simple, using a 32 bit accumulator (sum),
+	*  we add sequential 16 bit words to it, and at the end, fold
+	*  back all the carry bits from the top 16 bits into the lower
+	*  16 bits.
+	*/
+	while (nleft > 1) {
+		sum += *w++;
+		nleft -= 2;
+	}
+
+	/* mop up an odd byte, if necessary */
+	if (nleft == 1) {
+		u_short	u = 0;
+
+		*(u_char *)(&u) = *(u_char *)w;
+		sum += u;
+	}
+
+	/*
+	* add back carry outs from top 16 bits to low 16 bits
+	*/
+	sum = (sum >> 16) + (sum & 0xffff);	/* add hi 16 to low 16 */
+	sum += (sum >> 16);			/* add carry */
+	answer = ~sum;				/* truncate to 16 bits */
+	return (answer);
 }
