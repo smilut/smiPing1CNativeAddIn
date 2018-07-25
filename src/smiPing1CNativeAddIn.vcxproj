@@ -98,12 +98,12 @@
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>32.dll</TargetExt>
     <IncludePath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>64.dll</TargetExt>
     <IncludePath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>

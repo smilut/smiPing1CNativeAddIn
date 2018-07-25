@@ -1,0 +1,18 @@
+﻿  stdafx.cpp
+  smiPing1CNativeAddIn.cpp
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(659): warning C4018: >: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(660): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(591): warning C4101: wstrResult: неиспользованная локальная переменная
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(700): warning C4101: e: неиспользованная локальная переменная
+  WcharWrapper.cpp
+  dllmain.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1206,5): warning MSB8012: TargetExt(32.dll) не соответствует значению свойства выходного файла (.dll) для Linker. Это может привести к неправильной сборке проекта. Чтобы исправить это, убедитесь, что значения свойств $(OutDir), $(TargetName) и $(TargetExt) соответствуют значению, указанному в %(Link.OutputFile).
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1207,5): warning MSB8012: TargetName(smiPing1CNativeAddIn) не соответствует значению свойства выходного файла (smiPing1CNativeAddIn32) для Linker. Это может привести к неправильной сборке проекта. Чтобы исправить это, убедитесь, что значения свойств $(OutDir), $(TargetName) и $(TargetExt) соответствуют значению, указанному в %(Link.OutputFile).
+     Создается библиотека C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\Release\smiPing1CNativeAddIn.lib и объект C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\Release\smiPing1CNativeAddIn.exp
+smiPing1CNativeAddIn.exp : warning LNK4070: директива /OUT:smiPing1CNativeAddIn.dll в .EXP отличается от имени выходного файла "C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\Release\smiPing1CNativeAddIn32.dll"; директива игнорируется
+  Создание кода
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(703): warning C4715: CTemplNative::Ping: значение возвращается не при всех путях выполнения
+  All 71 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+smiPing1CNativeAddIn.exp : warning LNK4070: директива /OUT:smiPing1CNativeAddIn.dll в .EXP отличается от имени выходного файла "C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\Release\smiPing1CNativeAddIn32.dll"; директива игнорируется
+  smiPing1CNativeAddIn.vcxproj -> C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\Release\smiPing1CNativeAddIn32.dll

@@ -83,7 +83,8 @@ private:
 	long findName(const wchar_t* names[], const wchar_t* name, const uint32_t size) const;
 	void DropResultData();
 	wchar_t* SetWCharPropertyVal(const WCHAR_T* src);
-
+	wchar_t* to_wstring(std::string const str); //преобразование C-string в wchar_t, которые использует WinAPI
+	 
     // Attributes
 	//взято из примера its
 	IAddInDefBase * m_iConnect;

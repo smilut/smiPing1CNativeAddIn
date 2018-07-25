@@ -1,22 +1,34 @@
 ﻿  stdafx.cpp
   smiPing1CNativeAddIn.cpp
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(92): warning C4311: приведение типов: усечение указателя из "IComponentBase *" в "long"
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(92): warning C4302: приведение типов: усечение из "IComponentBase *" к "long"
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(177): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(237): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(253): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(273): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(306): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(425): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(517): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(654): warning C4018: >: несоответствие типов со знаком и без знака
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(655): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(589): warning C4101: wstrResult: неиспользованная локальная переменная
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(95): warning C4311: приведение типов: усечение указателя из "IComponentBase *" в "long"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(95): warning C4302: приведение типов: усечение из "IComponentBase *" к "long"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(180): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(244): warning C4267: аргумент: преобразование из "size_t" в "unsigned long"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(245): warning C4267: аргумент: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(256): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(276): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(309): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(428): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(520): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(580): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(580): warning C4996: 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdlib.h(927): note:  см. объявление "mbstowcs"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(586): warning C4996: 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdlib.h(927): note:  см. объявление "mbstowcs"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(689): warning C4018: >: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(690): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(609): warning C4101: wstrResult: неиспользованная локальная переменная
   WcharWrapper.cpp
 c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\wcharwrapper.cpp(16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   dllmain.cpp
-     Создается библиотека C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn.lib и объект C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn.exp
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1206,5): warning MSB8012: TargetExt(64.dll) не соответствует значению свойства выходного файла (.dll) для Linker. Это может привести к неправильной сборке проекта. Чтобы исправить это, убедитесь, что значения свойств $(OutDir), $(TargetName) и $(TargetExt) соответствуют значению, указанному в %(Link.OutputFile).
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1207,5): warning MSB8012: TargetName(smiPing1CNativeAddIn) не соответствует значению свойства выходного файла (smiPing1CNativeAddIn64) для Linker. Это может привести к неправильной сборке проекта. Чтобы исправить это, убедитесь, что значения свойств $(OutDir), $(TargetName) и $(TargetExt) соответствуют значению, указанному в %(Link.OutputFile).
+     Создается библиотека C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn.lib и объект C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn.exp
+smiPing1CNativeAddIn.exp : warning LNK4070: директива /OUT:smiPing1CNativeAddIn.dll в .EXP отличается от имени выходного файла "C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn64.dll"; директива игнорируется
   Создание кода
-  All 71 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(584): warning C4700: использована неинициализированная локальная переменная "wstrResult"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(735): warning C4715: CTemplNative::Ping: значение возвращается не при всех путях выполнения
+  All 129 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Создание кода завершено
-  smiPing1CNativeAddIn.vcxproj -> C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn.dll
+smiPing1CNativeAddIn.exp : warning LNK4070: директива /OUT:smiPing1CNativeAddIn.dll в .EXP отличается от имени выходного файла "C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn64.dll"; директива игнорируется
+  smiPing1CNativeAddIn.vcxproj -> C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Release\smiPing1CNativeAddIn64.dll
