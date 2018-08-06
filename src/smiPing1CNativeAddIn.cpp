@@ -15,7 +15,7 @@ lib в строку 'Каталоги библиотек'
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include <WinSock2.h>
-#include <ws2tcpip.h>
+
 #include <Windows.h>
 #include <exception>
 #include <iostream>
@@ -25,6 +25,11 @@ lib в строку 'Каталоги библиотек'
 #include <wchar.h>
 #include <string>
 #include <comdef.h>
+
+#include <iphlpapi.h>
+#include <icmpapi.h>
+#include <WS2tcpip.h>
+
 //создан по образцу из its.
 //класс для преобразования строки к юникоду
 //урезан для функционирования только для win 
@@ -32,8 +37,8 @@ lib в строку 'Каталоги библиотек'
 //собственный заголовочный файл, в котором будем описывать свои классы
 #include "smiPing1CNativeAddIn.h"
 
-// link with Ws2_32.lib
-#pragma comment (lib, "Ws2_32.lib")
+#pragma comment(lib, "iphlpapi.lib")
+#pragma comment(lib, "ws2_32.lib")
 
 static const wchar_t *g_PropNames[] = {
 	//поля для инициализации
@@ -594,7 +599,7 @@ wchar_t* CTemplNative::to_wstring(std::string const src)
 //прикладные методы компоненты
 bool CTemplNative::Ping() //обработка ePing
 {		
-	DropResultData(); //обнуляем предыдущие результаты
+	/*
 	UINT nRetries = m_intPingCount;
 	_bstr_t pstrHost(m_strAddress);
 	SOCKET	  rawSocket;
@@ -607,10 +612,26 @@ bool CTemplNative::Ping() //обработка ePing
 	DWORD	  dwElapsed;
 	u_char    cTTL;
 	wchar_t* wstrResult;
+	*/
+	HANDLE hIcmpFile;
+	unsigned long ipaddr = INADDR_NONE;
+	DWORD dwRetVal = 0;
+	char SendData[64] = "Data Buffer";
+	LPVOID ReplyBuffer = NULL;
+	DWORD ReplySize = 64;
+	//_bstr_t pstrHost(L"uhuuihn99.ru");
+	_bstr_t pstrHost(m_strAddress);
+	DWORD dwRetval;
+	struct addrinfo *result = NULL;
+	struct addrinfo hints;
+	WSADATA wsaData;
+	int iResult;
+	UINT	  nLoop;
+	UINT nRetries = m_intPingCount;
 
 	try
 	{
-
+		DropResultData(); //обнуляем предыдущие результаты
 
 		int iResult;
 		WSADATA wsaData;
@@ -623,108 +644,70 @@ bool CTemplNative::Ping() //обработка ePing
 				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 				(LPWSTR)&m_strErrMessage, 0, NULL);
 
-			//m_strErrMessage = L"Ошибка инициализации WSAStartup.";
 			return true;
 		}
 
-		// Create a Raw socket
-		//rawSocket = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-		rawSocket = WSASocket(AF_INET, SOCK_RAW, IPPROTO_ICMP, NULL, 0, 0);
+		//--------------------------------
+		// Setup the hints address info structure
+		// which is passed to the getaddrinfo() function
+		ZeroMemory(&hints, sizeof(hints));
+		hints.ai_family = AF_INET;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;
 
-		//if (rawSocket == SOCKET_ERROR)
-		if (rawSocket == INVALID_SOCKET)
-		{
-			m_boolIsError = true;			
-			FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, WSAGetLastError(),
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				(LPWSTR)&m_strErrMessage, 0, NULL);
-			//m_strErrMessage = L"Ошибка открытия сокета";
+		//определяем адрес по его описанию
+		dwRetval = getaddrinfo(pstrHost, NULL, &hints, &result);
+		if (dwRetval != 0) {
+			m_boolIsError = true;
+			m_strErrMessage = L"Ошибка определения адреса функция getaddrinfo(...)";
+			WSACleanup();
+			return true;
+		}
+		ipaddr = ((struct sockaddr_in *) result->ai_addr)->sin_addr.S_un.S_addr;
+
+		hIcmpFile = IcmpCreateFile();
+		if (hIcmpFile == INVALID_HANDLE_VALUE) {
+			m_boolIsError = true;
+			m_strErrMessage = L"Не удалось инициализировать ICMP";
 			return true;
 		}
 
-		// Lookup host
-		lpHost = gethostbyname(pstrHost);
-
-		if (lpHost == NULL)
-		{
-			//ошибка не найден host по адресу
-			m_strErrMessage = L"Host не найден.";
+		ReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(SendData);
+		ReplyBuffer = (VOID*)malloc(ReplySize);
+		if (ReplyBuffer == NULL) {
+			m_boolIsError = true;
+			m_strErrMessage = L"Ошибка выделения памяти для буфера обмена пакетами";
 			return true;
 		}
 
-		// Setup destination socket address
-		saDest.sin_addr.s_addr = *((u_long FAR *) (lpHost->h_addr));
-		saDest.sin_family = AF_INET;
-		saDest.sin_port = 0;
-
+		m_intGoodPingPercent = 0;
+		m_intPackageSizeB = sizeof(SendData);
 		// Ping multiple times
 		for (nLoop = 0; nLoop < nRetries; nLoop++)
 		{
-			// Send ICMP echo request
-			SendEchoRequest(rawSocket, &saDest);
+			dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), NULL, ReplyBuffer, ReplySize, 1000);
+			if (dwRetVal != 0) {
+				//ping -- прошел, смотрим результат
+				PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
+				struct in_addr ReplyAddr;
+				ReplyAddr.S_un.S_addr = pEchoReply->Address;
 
-			nRet = WaitForEchoReply(rawSocket);
-			if (nRet == SOCKET_ERROR)
-			{
-				m_boolIsError = true;
-				m_strErrMessage = L"Ожидание ответа. Ошибка работы с сокетом";
-				break;
-			}
-			if (!nRet)
-			{
-				//превышено время ожидания ответа.
-				m_strErrMessage = L"Превышено время ожидания.";
-			}
-			else
-			{
-
-				// Receive reply
-				dwTimeSent = RecvEchoReply(rawSocket, &saSrc, &cTTL);
-
-				// Calculate elapsed time
-				dwElapsed = GetTickCount() - dwTimeSent;
-
-				//устанавливаем мин и макс время ожидания ответа
-				if (m_intMinElapsedTime > dwElapsed || m_intMinElapsedTime == 0) m_intMinElapsedTime = dwElapsed;
-				if (m_intMaxElapsedTime < dwElapsed) m_intMaxElapsedTime = dwElapsed;
 				m_intGoodPingPercent++;
-				m_intPackageSizeB = REQ_DATASIZE;
-				/*
-				str.Format("Reply[%d] from: %s: bytes=%d time=%ldms TTL=%d",
-				nLoop+1, -- номер повторения
-				inet_ntoa(saSrc.sin_addr), -- адрес для пинга
-				REQ_DATASIZE, -- размер пакета
-				dwElapsed, -- время ожидания ответа
-				cTTL -- время TTL);
-				*/
-
-				//пауза 1 сек
-				Sleep(1000);
+				//устанавливаем мин и макс время ожидания ответа
+				if (m_intMinElapsedTime > pEchoReply->RoundTripTime || m_intMinElapsedTime == 0) m_intMinElapsedTime = pEchoReply->RoundTripTime;
+				if (m_intMaxElapsedTime < pEchoReply->RoundTripTime) m_intMaxElapsedTime = pEchoReply->RoundTripTime;
 			}
+			else {
+				//ping -- не прошел, например по таймауту
+				m_strErrMessage = L"Превышен таймаут";
+			}			
 		}
-
-
-		nRet = closesocket(rawSocket);
-		if (nRet == SOCKET_ERROR)
-		{
-			m_boolIsError = true;
-			m_strErrMessage = L"Ошибка закрытия сокета";
-		}
-		WSACleanup();
 
 		m_intGoodPingPercent = m_intGoodPingPercent / m_intPingCount * 100;
-		m_boolPingIsComplete = true;
-		//пингуем
-		/*
-		//Тестовые данные для проверки интерфейсов
-		m_intGoodPingPercent = 20;
-		m_intMaxElapsedTime = 100;
-		m_intMinElapsedTime = 30;
-		m_boolPingIsComplete = true;
-		m_boolIsError = true;
-		m_strErrMessage = L"Образец сообщения об ошибке";
-		*/
+
+		freeaddrinfo(result);
+		WSACleanup();
+
 		return true;
 	}
 	catch(std::exception &e)
