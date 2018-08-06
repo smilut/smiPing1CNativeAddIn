@@ -704,6 +704,7 @@ bool CTemplNative::Ping() //обработка ePing
 		}
 
 		m_intGoodPingPercent = m_intGoodPingPercent / m_intPingCount * 100;
+		m_boolPingIsComplete = true;
 
 		freeaddrinfo(result);
 		WSACleanup();
