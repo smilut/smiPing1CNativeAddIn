@@ -1,20 +1,29 @@
 ﻿  stdafx.cpp
   smiPing1CNativeAddIn.cpp
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(92): warning C4311: приведение типов: усечение указателя из "IComponentBase *" в "long"
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(92): warning C4302: приведение типов: усечение из "IComponentBase *" к "long"
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(177): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(237): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(253): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(273): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(306): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(425): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(517): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(654): warning C4018: >: несоответствие типов со знаком и без знака
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(655): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(589): warning C4101: wstrResult: неиспользованная локальная переменная
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(100): warning C4311: приведение типов: усечение указателя из "IComponentBase *" в "long"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(100): warning C4302: приведение типов: усечение из "IComponentBase *" к "long"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(185): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(249): warning C4267: аргумент: преобразование из "size_t" в "unsigned long"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(250): warning C4267: аргумент: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(261): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(281): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(314): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(433): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(525): warning C4267: =: преобразование из "size_t" в "uint32_t"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(585): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(585): warning C4996: 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdlib.h(927): note:  см. объявление "mbstowcs"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(591): warning C4996: 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdlib.h(927): note:  см. объявление "mbstowcs"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(697): warning C4018: >: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(698): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(628): warning C4101: iResult: неиспользованная локальная переменная
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(627): warning C4101: wsaData: неиспользованная локальная переменная
   WcharWrapper.cpp
 c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\wcharwrapper.cpp(16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   Создание кода...
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(589): warning C4700: использована неинициализированная локальная переменная "wstrResult"
+c:\users\s.milytinskiy\source\repos\smiping1cnativeaddin\src\smiping1cnativeaddin.cpp(719): warning C4715: CTemplNative::Ping: значение возвращается не при всех путях выполнения
   dllmain.cpp
-     Создается библиотека C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\x64\Debug\smiPing1CNativeAddIn.lib и объект C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\x64\Debug\smiPing1CNativeAddIn.exp
-  smiPing1CNativeAddIn.vcxproj -> C:\Users\s.milytinskiy\source\repos\smiPing1CNativeAddIn\src\x64\Debug\smiPing1CNativeAddIn.dll
+     Создается библиотека C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Debug\smiPing1CNativeAddIn.lib и объект C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Debug\smiPing1CNativeAddIn.exp
+  smiPing1CNativeAddIn.vcxproj -> C:\Users\s.milytinskiy\Source\Repos\smiPing1CNativeAddIn\src\x64\Debug\smiPing1CNativeAddIn.dll
